@@ -5,7 +5,9 @@
 <mapper namespace="sql">
 	<select id="executeQuery" parameterType="string" resultType="map">
 		${value}	
-	</select>
+	</select>	
 	
-	
+	<update id="executeUpdate" parameterType="string">
+		${value}	
+	</update>
 </mapper>  

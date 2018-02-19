@@ -1,6 +1,8 @@
 package com.iot.spring.common.aspect;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.iot.spring.dao.NaverTransDAO;
 import com.iot.spring.vo.NaverMsg;
@@ -27,8 +28,7 @@ public class LogPrintAspect {
 	private static final Logger logger = LoggerFactory.getLogger(LogPrintAspect.class);
 	
 	@Autowired
-	private ObjectMapper om;
-	
+	private ObjectMapper om;	
 	@Autowired
 	private NaverTransDAO ntDAO;
 	
@@ -45,13 +45,26 @@ public class LogPrintAspect {
 		long startTime = System.currentTimeMillis();
 		try {			
 			obj = pjp.proceed();			
-		} catch(Throwable e){
+		} 
+//		catch(Exception e){
+//			logger.error("error=>{}", e);	
+//			Map<String,Object> map = new HashMap<String,Object>();
+//			String msg = e.getMessage();
+//			msg = ntDAO.getText(msg);	
+//			logger.error("error=>{}", msg);	
+//			//NaverMsg nm = om.readValue(msg, NaverMsg.class);
+//			map.put("errorMsg", msg);
+//			
+//			logger.error("errorasdasdasdasd =>{}",map);
+//			return map;
+//		} 
+		catch (Throwable e) {
 			logger.error("error=>{}", e);	
-			ModelAndView mav = new ModelAndView("error/error");				
-			String msg = ntDAO.getText(e.getMessage());	
+			Map<String,Object> map = new HashMap<String,Object>();
+			String msg = ntDAO.getText(e.getMessage());				
 			NaverMsg nm = om.readValue(msg, NaverMsg.class);
-			mav.addObject("errorMsg", nm);
-			return mav;
+			map.put("errorMsg", nm.getMessage().getResult().getTranslatedText());			
+			return map;
 		}
 		logger.info("@Around end, RunTime : {} ms",(System.currentTimeMillis()-startTime));		
 		return obj;		

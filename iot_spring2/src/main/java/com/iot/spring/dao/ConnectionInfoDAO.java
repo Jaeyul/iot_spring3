@@ -18,4 +18,6 @@ public interface ConnectionInfoDAO {
 	List<Map<String,Object>> selectDatabaseList(SqlSession ss)throws Exception ;
 	List<TableVO> selectTableList(SqlSession ss, String dbName);
 	List<ColumnVO> selectColumnList(SqlSession ss, Map<String,String> map);
+	int useDatabase(String dbName, SqlSession ss);
+	
 }

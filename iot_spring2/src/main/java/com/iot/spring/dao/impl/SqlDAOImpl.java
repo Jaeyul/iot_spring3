@@ -14,9 +14,15 @@ public class SqlDAOImpl implements SqlDAO {
 	@Override
 	public List<Map<String, Object>> selectQueryData(String sql, SqlSession ss) {
 		
-		List<Map<String,Object>> rowDataList = ss.selectList("sql.executeQuery", sql); 
+		List<Map<String,Object>> dataList = ss.selectList("sql.executeQuery", sql); 
 		
-		return rowDataList;
+		return dataList;
+	}
+
+	@Override
+	public int getUpdateResult(String sql, SqlSession ss) {
+		int result = ss.update("sql.executeUpdate", sql);
+		return result;
 	}
 
 }

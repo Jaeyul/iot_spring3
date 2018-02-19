@@ -8,5 +8,5 @@ import org.apache.ibatis.session.SqlSession;
 public interface SqlDAO {
 	
 	public List<Map<String,Object>> selectQueryData(String sql, SqlSession ss);
-
+	public int getUpdateResult(String sql, SqlSession ss);
 }

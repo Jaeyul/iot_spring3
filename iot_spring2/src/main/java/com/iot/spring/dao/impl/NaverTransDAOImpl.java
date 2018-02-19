@@ -63,7 +63,7 @@ public class NaverTransDAOImpl implements NaverTransDAO{
 			con.setRequestProperty("X-Naver-Client-Secret", this.clientSecret);
 			con.setRequestProperty("Content-Type", this.contentType); 
 			// post request
-			String postParams = "source=" + this.source + "&target=" + this.target + "&text=" + text;
+			String postParams = "source=" + this.source + "&target=" + this.target + "&text=" + text.substring(50,250);
 			con.setDoOutput(true);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(postParams);
@@ -81,9 +81,6 @@ public class NaverTransDAOImpl implements NaverTransDAO{
 				response.append(inputLine);
 			}
 			br.close();
-			
-			
-			
 			return response.toString();
 
 		} catch (Exception e) {

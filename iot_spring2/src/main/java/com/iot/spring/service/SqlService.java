@@ -8,5 +8,5 @@ import javax.servlet.http.HttpSession;
 public interface SqlService {
 	
 	public List<Map<String,Object>> getQueryData(String sql, HttpSession hs);
-
+	public int getUpdateResult(String sql, HttpSession hs);
 }

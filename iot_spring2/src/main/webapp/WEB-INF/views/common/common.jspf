@@ -15,9 +15,9 @@
 <script src="${rPath}/js/jquery-3.2.1.js${ver}" charset="utf-8"></script>
 <script src="${dPath}/dhtmlx.js${ver}" charset="utf-8"></script>
 <script src="${rPath}/js/common.js${ver}"></script>
-<script type="text/javascript" charset="utf-8">
+<!-- <script type="text/javascript" charset="utf-8">
 	window.alert = dhtmlx.alert;
-</script>
+</script>  -->
 <!-- Chrome, Safari, IE -->
 <link rel="shortcut icon" href="${rPath}/imgs/favicon.png">
 <!-- Firefox, Opera (Chrome and Safari say thanks but no thanks) -->

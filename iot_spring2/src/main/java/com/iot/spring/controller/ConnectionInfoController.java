@@ -71,8 +71,8 @@ public class ConnectionInfoController {
 			HttpSession hs,
 			Map<String,Object> map) {
 		
-		SqlSession ss = (SqlSession) hs.getAttribute("sqlSession");		
-		
+		int useOk = cis.useDatabase(dbName,hs);		
+		log.info("useOk=>{}", useOk);
 		List<TableVO> tableList = cis.getTableList(hs, dbName);		
 		map.put("list", tableList);
 		map.put("parentId", parentId);

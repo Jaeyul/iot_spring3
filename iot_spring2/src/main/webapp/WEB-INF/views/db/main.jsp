@@ -157,17 +157,56 @@ dhtmlxEvent(window,"load",function(){
 			{type: "newcolumn"},
 			{type: "button", name:"cancelBtn",value: "취소"} 
 		]},
-		{type:"input",name:"sqlTa",label:"sql",required:true,rows:10,style:"background-color:#ecf3f9;border:1px solid #39c;width:800"},
+		{type:"input",name:"sqlTa",label:"sql",required:true,rows:12,style:"background-color:#EFF5FB;border:1px solid #39c;width:1000"},
 	];
 	var sqlForm = bTabs.tabs("sql").attachForm(sqlFormObj);
 	
 	sqlForm.attachEvent("onButtonClick", function(name){		
 		if(name=="runBtn"){
-			var sql = sqlForm.getItemValue("sqlTa");
-			var au = new AjaxUtil("${root}/sql/query/"+sql,null,"get");
-			au.send();        
+			var sql = sqlForm.getItemValue("sqlTa").trim();
+			if(sql.indexOf("select") == 0){
+				var au = new AjaxUtil("${root}/sql/query/"+sql,null,"post");			
+				function queryCB(res){
+					if(res.errorMsg != null){
+						alert(res.errorMsg);
+						
+					}else{
+						var cLayGrid = cLay.attachGrid();
+						var headerStr = "";
+						var colTypeStr = "";				
+						if(res.list[0] != null){
+							for(var key in res.list[0]){						
+								headerStr += key + ",";
+								colTypeStr += "ro,";
+							} 					
+						}
+						headerStr = headerStr.substr(0, headerStr.length-1);
+						colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
+						cLayGrid.setColumnIds(headerStr);
+						cLayGrid.setHeader(headerStr);
+						cLayGrid.setColTypes(colTypeStr);
+						cLayGrid.init();  					
+						cLayGrid.parse({data:res.list},"js");
+					}					
+				}			
+				au.send(queryCB); 
+			}			
+			else{				
+				var au = new AjaxUtil("${root}/sql/update/"+sql,null,"post");
+				function updateCB(res){
+					if(res.result != 0 ){
+						alert("성공");
+						cLay.detachObject();
+					}else{
+						alert("실패");	
+					}
+				}				
+				au.send(updateCB);
+			}
+			
 		}else if(name=="cancelBtn"){			
 			sqlForm.clear();
+			
 		}
 	});
 	
@@ -234,6 +273,12 @@ dhtmlxEvent(window,"load",function(){
 		}
 	});	
 })
+
+$(window).unload(function() {
+      var au = new AjaxUtil("${root}/user/logout", null, "get");
+      au.send();
+});
+
 </script>
 <body>
 	<div id="footDiv" class="my_ftr">
