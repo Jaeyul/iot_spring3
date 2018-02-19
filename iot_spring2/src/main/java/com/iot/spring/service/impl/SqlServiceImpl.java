@@ -3,28 +3,21 @@ package com.iot.spring.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.servlet.http.HttpSession;
+
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
 
-import com.iot.spring.dao.SqlDAO;
 import com.iot.spring.service.SqlService;
 
 @Service
 public class SqlServiceImpl implements SqlService {
-	@Autowired
-	SqlDAO sdao;
-	
 
 	@Override
-	public List<Map<String, Object>> executeQuery(String sql) {
+	public List<Map<String, Object>> getQueryData(String sql, HttpSession hs) {
+		SqlSession ss =  (SqlSession) hs.getAttribute("sqlSession");
 		
-		return sdao.select(sql);
-	}
-
-	@Override
-	public int executeUpdate(String sql) {
-		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 }

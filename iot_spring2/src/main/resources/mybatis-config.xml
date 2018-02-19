@@ -16,5 +16,6 @@
 	<mappers>
 		<mapper resource="sql/user_info.xml"/>
 		<mapper resource="sql/connection_info.xml"/>
+		<mapper resource="sql/sql.xml"/>
 	</mappers>
 </configuration>

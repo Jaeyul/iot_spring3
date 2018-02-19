@@ -75,7 +75,8 @@ public class ConnectionInfoServiceImpl implements ConnectionInfoService{
 
 	@Override
 	public List<TableVO> getTableList(HttpSession hs, String dbName) {
-		SqlSession ss = (SqlSession)hs.getAttribute("sqlSession");
+		
+		SqlSession ss = (SqlSession)hs.getAttribute("sqlSession");		
 		return cidao.selectTableList(ss, dbName);
 	}
 

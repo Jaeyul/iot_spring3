@@ -12,11 +12,11 @@ import com.iot.spring.vo.ConnectionInfoVO;
 public class DBConnector {
 	private BasicDataSource bds;
 	private SqlSessionFactoryBean ssf;
-	
+	private String url;
 	public void setConnectionInfo(ConnectionInfoVO ci)throws Exception {
 		bds = new BasicDataSource();
 		bds.setDriverClassName("org.mariadb.jdbc.Driver");
-		String url = "jdbc:mysql://" + ci.getCiUrl() + ":" + ci.getCiPort();
+		url = "jdbc:mysql://" + ci.getCiUrl() + ":" + ci.getCiPort(); 
 		bds.setUrl(url);
 		bds.setUsername(ci.getCiUser());
 		bds.setPassword(ci.getCiPwd());

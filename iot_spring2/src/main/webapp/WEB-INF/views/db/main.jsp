@@ -161,27 +161,16 @@ dhtmlxEvent(window,"load",function(){
 	];
 	var sqlForm = bTabs.tabs("sql").attachForm(sqlFormObj);
 	
-	sqlForm.attachEvent("onButtonClick",function(id){
-		if(id=="runBtn"){
-			var sql = sqlForm.getItemValue("sqlTa").trim();
-			if(sql.indexOf("select")==0){
-				var au = new AjaxUtil("${root}/sql/query/" + sql,null,"get");
-				function queryCB(res){					
-					var sqlGrid = cLay.attachGrid()					
-					sqlGrid.setColumnIds(res.colStr);
-					sqlGrid.setHeader(res.colStr);
-					sqlGrid.setColTypes(res.typeStr);
-					sqlGrid.init();
-					sqlGrid.parse({data:res.list},"js");					
-				}
-				au.send(queryCB);				
-			}else{				
-				
-			}			
-		}else if(id=="cancelBtn"){
-			
+	sqlForm.attachEvent("onButtonClick", function(name){		
+		if(name=="runBtn"){
+			var sql = sqlForm.getItemValue("sqlTa");
+			var au = new AjaxUtil("${root}/sql/query/"+sql,null,"get");
+			au.send();        
+		}else if(name=="cancelBtn"){			
+			sqlForm.clear();
 		}
 	});
+	
 	
 	var transFormObj = [
 		{type: "block", blockOffset: 10, list: [
@@ -206,9 +195,7 @@ dhtmlxEvent(window,"load",function(){
 			
 		}else if(id=="cancelBtn"){
 			
-		}
-		
-		
+		}		
 	});
 	
 	
@@ -245,8 +232,7 @@ dhtmlxEvent(window,"load",function(){
 			form.clear();
 			popW.hide();
 		}
-	});
-	
+	});	
 })
 </script>
 <body>

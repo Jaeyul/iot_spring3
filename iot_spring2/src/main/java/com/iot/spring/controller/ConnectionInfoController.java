@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,10 @@ public class ConnectionInfoController {
 			@PathVariable("parentId")String parentId,
 			HttpSession hs,
 			Map<String,Object> map) {
-		List<TableVO> tableList = cis.getTableList(hs, dbName);
+		
+		SqlSession ss = (SqlSession) hs.getAttribute("sqlSession");		
+		
+		List<TableVO> tableList = cis.getTableList(hs, dbName);		
 		map.put("list", tableList);
 		map.put("parentId", parentId);
 		return map;

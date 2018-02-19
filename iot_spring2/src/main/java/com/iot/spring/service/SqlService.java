@@ -3,9 +3,10 @@ package com.iot.spring.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 public interface SqlService {
 	
-	public List<Map<String,Object>> executeQuery(String sql);
-	public int executeUpdate(String sql);
+	public List<Map<String,Object>> getQueryData(String sql, HttpSession hs);
 
 }
