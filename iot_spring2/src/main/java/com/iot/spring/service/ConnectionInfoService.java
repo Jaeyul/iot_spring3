@@ -18,5 +18,7 @@ public interface ConnectionInfoService {
 	List<TableVO> getTableList(HttpSession hs,String dbName);
 	List<ColumnVO> getColumnList(HttpSession hs, Map<String,String> map);
 	int useDatabase(String dbName, HttpSession hs);
+	public List<Map<String,Object>> getTDList(String tableName, HttpSession hs);
+	
 	
 }

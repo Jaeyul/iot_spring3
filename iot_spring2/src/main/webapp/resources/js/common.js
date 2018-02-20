@@ -41,7 +41,7 @@ var AjaxUtilDx = function (url, dxObj, type, dataType){
 		if(callback){
 			this.callbackSuccess = callback;
 		}
-		$.ajax({ 
+		$.ajax({
 	        type     : this.type
 	    ,   url      : this.url
 	    ,   dataType : this.dataType 

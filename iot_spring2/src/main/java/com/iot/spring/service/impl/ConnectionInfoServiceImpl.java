@@ -92,4 +92,10 @@ public class ConnectionInfoServiceImpl implements ConnectionInfoService{
 		SqlSession ss = (SqlSession) hs.getAttribute("sqlSession");
 		return cidao.useDatabase(dbName, ss);
 	}
+
+	@Override
+	public List<Map<String, Object>> getTDList(String tableName, HttpSession hs) {
+		SqlSession ss = (SqlSession) hs.getAttribute("sqlSession");
+		return cidao.selectTDList(tableName, ss);
+	}
 }

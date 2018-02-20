@@ -1,5 +1,6 @@
 package com.iot.spring.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,29 @@ public class SqlServiceImpl implements SqlService {
 		SqlSession ss =  (SqlSession) hs.getAttribute("sqlSession");
 				
 		return sdao.getUpdateResult(sql, ss);
+	}
+
+	@Override
+	public Map<String, Object> getMultiResult(String sql, HttpSession hs) {
+		Map<String, Object> map = new HashMap<String,Object>();
+		SqlSession ss =  (SqlSession) hs.getAttribute("sqlSession");
+		String[] sqlArr = sql.split(";");
+		int qIndex = 0;
+		int uIndex = 0;		
+		
+		for(int i=0; i<sqlArr.length; i++) {
+			if(sqlArr[i].trim().indexOf("select") == 0) {
+				List<Map<String,Object>> list =  sdao.selectQueryData(sqlArr[i].trim(), ss);
+				qIndex++;				
+				map.put("list"+qIndex, list);
+				
+			}else {
+				int result = sdao.getUpdateResult(sqlArr[i].trim(), ss);
+				uIndex++;
+				map.put("result"+uIndex, result);
+			}			
+		}	
+		return map;
 	}
 
 }

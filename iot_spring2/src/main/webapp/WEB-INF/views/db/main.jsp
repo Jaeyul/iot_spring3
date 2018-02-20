@@ -25,6 +25,7 @@ div.controls {
 .my_ftr {
 	background-color: white;
 	padding-top: 9px;
+	
 }
 
 .my_ftr .text {
@@ -34,6 +35,7 @@ div.controls {
 	padding: 5px 10px;
 	height: 70px;
 	border: 1px solid #dfdfdf;
+	overflow: scroll;
 }
 
 </style>
@@ -42,6 +44,7 @@ div.controls {
 var bodyLayout, dbTree,winF,popW; 
 var aLay, bLay, cLay;
 var bTabs, bTab1, bTab2, bTab3;
+var cTabs;
 var tableInfoGrid;
 function columnListCB(res){
 	if(res.list){
@@ -60,10 +63,32 @@ function columnListCB(res){
 		tableInfoGrid.setHeader(headerStr);
 		tableInfoGrid.setColTypes(colTypeStr);
         tableInfoGrid.init();
-		tableInfoGrid.parse({data:res.list},"js");
-		console.log(res);
+		tableInfoGrid.parse({data:res.list},"js");		
 	}
+	if(res.tDList){
+		console.log(res.tDList);
+		tableDataGrid = bTabs.tabs("tableData").attachGrid();
+		var columns = res.tDList[0];
+		var headerStr = "";
+		var colTypeStr = "";
+		for(var key in columns){
+			if(key=="id") continue;
+			
+			headerStr += key + ",";
+			colTypeStr += "ro,";
+		}
+		headerStr = headerStr.substr(0, headerStr.length-1);
+		colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);
+		tableDataGrid.setColumnIds(headerStr);
+		tableDataGrid.setHeader(headerStr);
+		tableDataGrid.setColTypes(colTypeStr);
+		tableDataGrid.init();
+		tableDataGrid.parse({data:res.tDList},"js");
+			
+		
+	}		
 }
+
 function connectionListCB(res){
 	dbTree = aLay.attachTreeView({
 	    items: res.list 
@@ -74,6 +99,7 @@ function connectionListCB(res){
 			var text = dbTree.getItemText(id);
 			var au = new AjaxUtil("${root}/connection/tables/" + text + "/" + id,null,"get");
 			au.send(tableListCB); 
+			$("div.text").append("<br>"+"use " + "'" + text + "'" + ";");
 		}else if(level==3){
 			var pId= dbTree.getParentId(id);
 			var dbName = dbTree.getItemText(pId);			
@@ -151,57 +177,158 @@ dhtmlxEvent(window,"load",function(){
 			{id:"translate", text:"Run Translate"}
 		]
 	});
+	
+	
 	var sqlFormObj = [
 		{type: "block", blockOffset: 10, list: [
 			{type: "button", name:"runBtn",value: "실행"},
 			{type: "newcolumn"},
 			{type: "button", name:"cancelBtn",value: "취소"} 
 		]},
-		{type:"input",name:"sqlTa",label:"sql",required:true,rows:12,style:"background-color:#EFF5FB;border:1px solid #39c;width:1000"},
+		{type:"label",name:"label", label:"", list:[
+			{type:"input",name:"sqlTa",label:"",required:true,rows:12,style:"border:1px solid #39c"}
+		]}
 	];
-	var sqlForm = bTabs.tabs("sql").attachForm(sqlFormObj);
+		
+	var sqlForm = bTabs.tabs("sql").attachForm(sqlFormObj);	
+	
+	var w = bLay.getWidth();
+	var stylePlusWidth = w - 45;
+	var Names = document.getElementsByName("sqlTa");
+	for(var name of Names){
+		name.style.width = stylePlusWidth + "px";	
+	}
 	
 	sqlForm.attachEvent("onButtonClick", function(name){		
 		if(name=="runBtn"){
-			var sql = sqlForm.getItemValue("sqlTa").trim();
-			if(sql.indexOf("select") == 0){
-				var au = new AjaxUtil("${root}/sql/query/"+sql,null,"post");			
-				function queryCB(res){
-					if(res.errorMsg != null){
-						alert(res.errorMsg);
-						
-					}else{
-						var cLayGrid = cLay.attachGrid();
-						var headerStr = "";
-						var colTypeStr = "";				
-						if(res.list[0] != null){
-							for(var key in res.list[0]){						
-								headerStr += key + ",";
-								colTypeStr += "ro,";
-							} 					
-						}
-						headerStr = headerStr.substr(0, headerStr.length-1);
-						colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
-						cLayGrid.setColumnIds(headerStr);
-						cLayGrid.setHeader(headerStr);
-						cLayGrid.setColTypes(colTypeStr);
-						cLayGrid.init();  					
-						cLayGrid.parse({data:res.list},"js");
-					}					
+			var sql = sqlForm.getItemValue("sqlTa").trim();			
+			var sqlLength = sql.length;
+			var semiColNum = sql.lastIndexOf(";");				
+			if(semiColNum != -1 && sqlLength == (semiColNum+1)){
+				sql = sql.substr(0, (sqlLength-1));		
+			}	
+			
+			var sqlArr = [];			
+			splArr = sql.split(";");	
+			
+			if(splArr.length == 1){
+				if(sql.indexOf("select") == 0){
+					var au = new AjaxUtil("${root}/sql/query/"+sql,null,"post");			
+					function queryCB(res){
+						if(res.errorMsg){
+							alert(res.errorMsg);
+							
+						}else{
+							var cLayGrid = cLay.attachGrid();
+							var headerStr = "";
+							var colTypeStr = "";				
+							if(res.list[0] != null){
+								for(var key in res.list[0]){						
+									headerStr += key + ",";
+									colTypeStr += "ro,";
+								} 					
+							}
+							headerStr = headerStr.substr(0, headerStr.length-1);
+							colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
+							cLayGrid.setColumnIds(headerStr);
+							cLayGrid.setHeader(headerStr);
+							cLayGrid.setColTypes(colTypeStr);
+							cLayGrid.init();  					
+							cLayGrid.parse({data:res.list},"js");
+													
+							var aRows = 0;
+							var dRows = 0;
+							if(res.dRows){
+								dRows = res.dRows;
+							}
+							if(res.result){
+								aRows = res.result;
+							}						
+							$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+						}					
+					}			
+					au.send(queryCB); 
 				}			
-				au.send(queryCB); 
-			}			
-			else{				
-				var au = new AjaxUtil("${root}/sql/update/"+sql,null,"post");
-				function updateCB(res){
-					if(res.result != 0 ){
-						alert("성공");
-						cLay.detachObject();
-					}else{
-						alert("실패");	
-					}
-				}				
-				au.send(updateCB);
+				else{				
+					var au = new AjaxUtil("${root}/sql/update/"+sql,null,"post");
+					function updateCB(res){
+						if(res.errorMsg){
+							alert(res.errorMsg);						
+						}else{
+							if(res.result != 0 ){						
+								var aRows = 0;
+								var dRows = 0;
+								if(res.dRows){
+									dRows = res.dRows;
+								}
+								if(res.result){
+									aRows = res.result;
+								}						
+								$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+								cLay.detachObject();
+							}else{
+								alert("실패");	
+							}					
+						}
+					}				
+					au.send(updateCB);
+				}
+			}
+			
+			
+			else{	
+				
+				$.ajax({ 
+					url : "${root}/sql/multi",				  
+					dataType : "json", 				   
+					data     : sql,
+					type	: "POST",					
+				    beforeSend:function(xhr){
+				    	xhr.setRequestHeader("Accept","application/json");
+				    	xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
+				    },					
+				   	success : function(res){
+				   		
+				   		cTabs = cLay.attachTabbar();	
+				   		var aRows = 0;
+						var dRows = 0;
+						
+				   		for(var key in res){
+				   			if(key!="dRows" && key!="result"){
+				   				cTabs.addTab(key, "Result", null, null, true, true);
+				   				var cTGrid = cTabs.tabs(key).attachGrid();
+					   			var headerStr = "";
+								var colTypeStr = "";
+								for(var listCol in (res[key])[0]){						
+									headerStr += listCol + ",";
+									colTypeStr += "ro,";
+								}
+								headerStr = headerStr.substr(0, headerStr.length-1);
+								colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
+								cTGrid.setColumnIds(headerStr);
+								cTGrid.setHeader(headerStr);
+								cTGrid.setColTypes(colTypeStr);
+								cTGrid.init();  					
+								cTGrid.parse({data:res[key]},"js"); 
+							}
+				   			else{
+				   				
+				   				if(res.dRows){
+									dRows = res.dRows;
+								}
+								if(res.result){
+									aRows = res.result;
+								}		
+				   			}
+				   		}
+				   		$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+				   		
+				   	},
+				    error : function(xhr, status, e) {
+					    	alert("에러 : "+e);
+					}					
+				});		
+				
 			}
 			
 		}else if(name=="cancelBtn"){			
@@ -217,7 +344,9 @@ dhtmlxEvent(window,"load",function(){
 			{type: "newcolumn"},
 			{type: "button", name:"cancelBtn",value: "취소"} 
 		]},
-		{type:"input",name:"transTa",label:"translate",required:true,rows:10,style:"background-color:#ecf3f9;border:1px solid #39c;width:800"},
+		{type:"label",name:"label", label:"", list:[
+			{type:"input",name:"transTa",label:"",required:true,rows:10,style:"background-color:#ecf3f9;border:1px solid #39c;width:800"}
+		]}
 	];
 	var transForm = bTabs.tabs("translate").attachForm(transFormObj);
 	
@@ -272,12 +401,53 @@ dhtmlxEvent(window,"load",function(){
 			popW.hide();
 		}
 	});	
+	
+	
+	var waitForFinalEvent = (function() {
+		var timers = {};
+		return function(callback, ms, uniqueId) {
+			if (!uniqueId) {
+				uniqueId = "Don't call this twice without a uniqueId";
+			}
+			if (timers[uniqueId]) {
+				clearTimeout(timers[uniqueId]);
+			}
+			timers[uniqueId] = setTimeout(callback, ms);
+		};
+	})();
+
+
+	$(window).resize(function() {  
+		waitForFinalEvent(function() {
+			var w = bLay.getWidth();
+			var stylePlusWidth = w - 45;
+			var Names = document.getElementsByName("sqlTa");
+			for(var name of Names){
+				name.style.width = stylePlusWidth + "px";	
+			}
+		}, 300, "some unique string");
+	});
+	
+	
 })
 
-$(window).unload(function() {
+
+
+
+
+
+
+
+
+
+	
+
+
+
+/* $(window).unload(function() {
       var au = new AjaxUtil("${root}/user/logout", null, "get");
       au.send();
-});
+}); */
 
 </script>
 <body>

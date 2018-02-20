@@ -44,7 +44,9 @@ public class LogPrintAspect {
 		Object obj = null;
 		long startTime = System.currentTimeMillis();
 		try {			
-			obj = pjp.proceed();			
+			
+			obj = pjp.proceed();				
+			
 		} 
 //		catch(Exception e){
 //			logger.error("error=>{}", e);	
@@ -66,7 +68,8 @@ public class LogPrintAspect {
 			map.put("errorMsg", nm.getMessage().getResult().getTranslatedText());			
 			return map;
 		}
-		logger.info("@Around end, RunTime : {} ms",(System.currentTimeMillis()-startTime));		
+		long time = System.currentTimeMillis()-startTime;
+		logger.info("@Around end, RunTime : {} ms", time);		
 		return obj;		
 	}
 	

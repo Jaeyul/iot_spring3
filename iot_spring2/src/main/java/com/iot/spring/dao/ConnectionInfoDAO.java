@@ -20,4 +20,6 @@ public interface ConnectionInfoDAO {
 	List<ColumnVO> selectColumnList(SqlSession ss, Map<String,String> map);
 	int useDatabase(String dbName, SqlSession ss);
 	
+	List<Map<String,Object>> selectTDList(String tableName, SqlSession ss);
+	
 }

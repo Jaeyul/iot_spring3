@@ -74,5 +74,10 @@ public class ConnectionInfoDAOImpl implements ConnectionInfoDAO {
 		int result = ss.update("connection_info.useDatabase", dbName);
 		return result;
 	}
+	@Override
+	public List<Map<String, Object>> selectTDList(String tableName, SqlSession ss) {
+		List<Map<String, Object>> tDList = ss.selectList("connection_info.selectTableDatasList", tableName);
+		return tDList;
+	}
 
 }

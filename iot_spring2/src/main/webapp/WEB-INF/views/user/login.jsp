@@ -12,7 +12,7 @@
 	$(document).ready(function(){
 		winF = new dhtmlXWindows();
 		winF.attachViewportTo("winVP");
-		popW = winF.createWindow("win1",20,30,290,250);
+		popW = winF.createWindow("win1",20,30,350,320);
 		popW.button("close").hide();
 		popW.button("minmax").hide();
 		popW.button("park").hide();
@@ -23,14 +23,18 @@
 		winF.window("win1").denyResize();
 		var formObj = [
 			        {type:"settings", offsetTop:12,name:"connectionInfo",labelAlign:"left"},
-					{type:"input",name:"uiId", label:"아이디 : ",required:true},
-					{type:"password",name:"uiPwd", label:"비밀번호 : ",required:true},
-					{type: "block", blockOffset: 0, list: [
-						{type: "button", name:"loginBtn",value: "로그인"},
-						{type: "newcolumn"},
-						{type: "button", name:"cancelBtn",value: "취소"},
-						{type: "newcolumn"},
-						{type: "button", name:"joinBtn",value: "회원가입"}
+			        {type:"label",name:"label", label:"", list:[
+						{type:"input",name:"uiId", label:"아이디 : ",required:true},
+						{type:"password",name:"uiPwd", label:"비밀번호 : ",required:true}
+					]},
+					{type:"label",name:"label", label:"", list:[
+						{type: "block", blockOffset: 0, list: [
+							{type: "button", name:"loginBtn",value: "로그인"},
+							{type: "newcolumn"},
+							{type: "button", name:"cancelBtn",value: "취소"},
+							{type: "newcolumn"},
+							{type: "button", name:"joinBtn",value: "회원가입"}
+						]}
 					]}
 			];
 		var form = popW.attachForm(formObj,true);
