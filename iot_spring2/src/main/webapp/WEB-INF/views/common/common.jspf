@@ -8,11 +8,23 @@
 <c:set var="rPath" value="${root}/resources"/>
 <c:set var="pPath" value="${root}/path"/>
 <c:set var="dPath" value="${rPath}/dx"/>
+<%String rootPath = request.getContextPath();%>
+<c:set var="isLogin" value="${(empty sessionScope.isLogin)?false:sessionScope.isLogin}"/>
+<c:set var="Log" value="${(empty sessionScope.isLogin)?'login':'logout'}"/>
+
 
 <link rel="stylesheet" type="text/css" href="${dPath}/fonts/font_roboto/roboto.css${ver}"/>
 <link rel="stylesheet" type="text/css" href="${dPath}/dhtmlx.css${ver}"/>
 <link rel="stylesheet" type="text/css" href="${rPath}/css/common.css${ver}"/>
+<link rel="stylesheet" type="text/css" href="${rPath }/css/bootstrap.min.css${ver}"/>
+<link rel="stylesheet" type="text/css" href="${rPath }/css/bootstrap-theme.min.css${ver}"/>
+<link rel="stylesheet" type="text/css" href="${rPath }/css/bootstrap-table.css${ver}"/>
+<link rel="stylesheet" type="text/css" href="${rPath }/css/sidemenu.css"/>   
+
+
 <script src="${rPath}/js/jquery-3.2.1.js${ver}" charset="utf-8"></script>
+<script src="${rPath }/js/bootstrap.min.js${ver}"></script>
+<script src="${rPath }/js/bootstrap-table.js${ver}"></script>
 <script src="${dPath}/dhtmlx.js${ver}" charset="utf-8"></script>
 <script src="${rPath}/js/common.js${ver}"></script>
 <!-- <script type="text/javascript" charset="utf-8">
@@ -22,3 +34,6 @@
 <link rel="shortcut icon" href="${rPath}/imgs/favicon.png">
 <!-- Firefox, Opera (Chrome and Safari say thanks but no thanks) -->
 <link rel="icon" href="${rPath}/imgs/favicon.png">
+<%@ include file="/WEB-INF/views/common/header.jspf" %>   
+
+ 

@@ -42,7 +42,6 @@ public class ConnectionInfoController {
 		return map;
 	}
 
-
 	@RequestMapping(value="/db_list/{ciNo}", method=RequestMethod.GET)
 	public @ResponseBody Map<String,Object> getDatabaseList(@PathVariable("ciNo") int ciNo,
 			Map<String,Object> map,HttpSession hs) {
@@ -59,9 +58,13 @@ public class ConnectionInfoController {
 	}
 
 	@RequestMapping(value="/insert", method=RequestMethod.POST)
-	public @ResponseBody Map<String,Object> insertConnectionInfo(@Valid ConnectionInfoVO ci, Map<String,Object> map) {
+	public @ResponseBody Map<String,Object> insertConnectionInfo(ConnectionInfoVO ci,
+			HttpSession hs) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		
 		log.info("ci=>{}",ci);
-		cis.insertConnectionInfo(map, ci);
+		cis.insertConnectionInfo(map, ci, hs);
+		
 		return map;
 	}
 	@RequestMapping(value="/tables/{dbName}/{parentId}", method=RequestMethod.GET)

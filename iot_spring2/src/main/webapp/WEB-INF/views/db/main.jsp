@@ -35,7 +35,7 @@ div.controls {
 	padding: 5px 10px;
 	height: 70px;
 	border: 1px solid #dfdfdf;
-	overflow: scroll;
+	overflow: auto;
 }
 
 </style>
@@ -99,7 +99,9 @@ function connectionListCB(res){
 			var text = dbTree.getItemText(id);
 			var au = new AjaxUtil("${root}/connection/tables/" + text + "/" + id,null,"get");
 			au.send(tableListCB); 
-			$("div.text").append("<br>"+"use " + "'" + text + "'" + ";");
+			var msg = "<br>"+"use " + "'" + text + "'" + ";"
+			printLog(msg);
+			
 		}else if(level==3){
 			var pId= dbTree.getParentId(id);
 			var dbName = dbTree.getItemText(pId);			
@@ -124,8 +126,10 @@ function tableListCB(res){
 	}
 	dbTree.openItem(parentId);
 }
-function addConnectionCB(res){
-	console.log(res);
+function addConnectionCB(xhr,res){
+	var json = JSON.parse(res);
+	alert(json.msg);
+	popW.hide();
 }
 function dbListCB(res){
 	console.log(res);
@@ -141,9 +145,12 @@ function dbListCB(res){
 	}
 	dbTree.openItem(parentId);
 }
+
+
 dhtmlxEvent(window,"load",function(){
 	bodyLayout = new dhtmlXLayoutObject(document.body,"3L");
 	bodyLayout.attachFooter("footDiv");
+	bodyLayout.attachHeader("headDiv");
 	aLay = bodyLayout.cells("a");
 	aLay.setWidth(300);
 	aLay.setText("Connection Info List");
@@ -164,9 +171,7 @@ dhtmlxEvent(window,"load",function(){
 		}
 	})
 	var au = new AjaxUtil("${root}/connection/list",null,"get");
-	au.send(connectionListCB); 
-	
-
+	au.send(connectionListCB); 	
 	bLay = bodyLayout.cells("b");
 	bTabs = bLay.attachTabbar({
 		align:"left",
@@ -186,7 +191,7 @@ dhtmlxEvent(window,"load",function(){
 			{type: "button", name:"cancelBtn",value: "취소"} 
 		]},
 		{type:"label",name:"label", label:"", list:[
-			{type:"input",name:"sqlTa",label:"",required:true,rows:12,style:"border:1px solid #39c"}
+			{type:"input",name:"sqlTa",label:"", required:true,rows:12,style:"border:1px solid #39c"}
 		]}
 	];
 		
@@ -217,24 +222,30 @@ dhtmlxEvent(window,"load",function(){
 					function queryCB(res){
 						if(res.errorMsg){
 							alert(res.errorMsg);
-							
-						}else{
-							var cLayGrid = cLay.attachGrid();
+						}else{									
+							cTabs = cLay.attachTabbar();							
 							var headerStr = "";
-							var colTypeStr = "";				
+							var colTypeStr = "";		
+							var headerStyle = [];
 							if(res.list[0] != null){
-								for(var key in res.list[0]){						
-									headerStr += key + ",";
-									colTypeStr += "ro,";
+								for(var key in res.list[0]){
+									if(key=="tName") {										
+										cTabs.addTab("list", (res.list[0])[key], null, null, true, false);
+									}else{
+										headerStr += key + ",";
+										colTypeStr += "ro,";
+										headerStyle.push("color : red;");
+									}
 								} 					
 							}
+							var cTGrid = cTabs.tabs("list").attachGrid();
 							headerStr = headerStr.substr(0, headerStr.length-1);
 							colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
-							cLayGrid.setColumnIds(headerStr);
-							cLayGrid.setHeader(headerStr);
-							cLayGrid.setColTypes(colTypeStr);
-							cLayGrid.init();  					
-							cLayGrid.parse({data:res.list},"js");
+							cTGrid.setColumnIds(headerStr);
+							cTGrid.setHeader(headerStr,null,headerStyle);
+							cTGrid.setColTypes(colTypeStr);
+							cTGrid.init();  					
+							cTGrid.parse({data:res.list},"js");
 													
 							var aRows = 0;
 							var dRows = 0;
@@ -244,7 +255,9 @@ dhtmlxEvent(window,"load",function(){
 							if(res.result){
 								aRows = res.result;
 							}						
-							$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+							var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows;
+							printLog(msg);
+							
 						}					
 					}			
 					au.send(queryCB); 
@@ -263,8 +276,9 @@ dhtmlxEvent(window,"load",function(){
 								}
 								if(res.result){
 									aRows = res.result;
-								}						
-								$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+								}
+								var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows;
+								printLog(msg);
 								cLay.detachObject();
 							}else{
 								alert("실패");	
@@ -277,7 +291,6 @@ dhtmlxEvent(window,"load",function(){
 			
 			
 			else{	
-				
 				$.ajax({ 
 					url : "${root}/sql/multi",				  
 					dataType : "json", 				   
@@ -295,18 +308,22 @@ dhtmlxEvent(window,"load",function(){
 						
 				   		for(var key in res){
 				   			if(key!="dRows" && key!="result"){
-				   				cTabs.addTab(key, "Result", null, null, true, true);
+				   				cTabs.addTab(key, ((res[key])[0])["tName"], null, null, true, false);
 				   				var cTGrid = cTabs.tabs(key).attachGrid();
 					   			var headerStr = "";
 								var colTypeStr = "";
-								for(var listCol in (res[key])[0]){						
+								var headerStyle = [];
+								
+								for(var listCol in (res[key])[0]){
+									if(listCol=="tName") continue;
 									headerStr += listCol + ",";
 									colTypeStr += "ro,";
+									headerStyle.push("color : red;");
 								}
 								headerStr = headerStr.substr(0, headerStr.length-1);
 								colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
 								cTGrid.setColumnIds(headerStr);
-								cTGrid.setHeader(headerStr);
+								cTGrid.setHeader(headerStr,null,headerStyle);
 								cTGrid.setColTypes(colTypeStr);
 								cTGrid.init();  					
 								cTGrid.parse({data:res[key]},"js"); 
@@ -321,7 +338,8 @@ dhtmlxEvent(window,"load",function(){
 								}		
 				   			}
 				   		}
-				   		$("div.text").append("<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows);
+				   		var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows;
+				   		printLog(msg);
 				   		
 				   	},
 				    error : function(xhr, status, e) {
@@ -337,6 +355,164 @@ dhtmlxEvent(window,"load",function(){
 		}
 	});
 	
+	sqlForm.attachEvent("onKeydown", function(inp, ev, name, value){
+		if(name=="sqlTa"){
+			if(ev.which==120 && ev.ctrlKey){
+				var sql = sqlForm.getItemValue("sqlTa").trim();			
+				var sqlLength = sql.length;
+				var semiColNum = sql.lastIndexOf(";");				
+				if(semiColNum != -1 && sqlLength == (semiColNum+1)){
+					sql = sql.substr(0, (sqlLength-1));		
+				}					
+				var sqlArr = [];			
+				splArr = sql.split(";");					
+				if(splArr.length == 1){
+					if(sql.indexOf("select") == 0){
+						var au = new AjaxUtil("${root}/sql/query/"+sql,null,"post");			
+						function queryCB(res){
+							if(res.errorMsg){
+								alert(res.errorMsg);
+								
+							}else{									
+								cTabs = cLay.attachTabbar();							
+								var headerStr = "";
+								var colTypeStr = "";		
+								var headerStyle = [];
+								if(res.list[0] != null){
+									for(var key in res.list[0]){
+										if(key=="tName") {										
+											cTabs.addTab("list", (res.list[0])[key], null, null, true, false);
+										}else{
+											headerStr += key + ",";
+											colTypeStr += "ro,";
+											headerStyle.push("color : red;");
+										}
+									} 					
+								}								
+								var cTGrid = cTabs.tabs("list").attachGrid();
+								headerStr = headerStr.substr(0, headerStr.length-1);
+								colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
+								cTGrid.setColumnIds(headerStr);
+								cTGrid.setHeader(headerStr,null,headerStyle);
+								cTGrid.setColTypes(colTypeStr);
+								cTGrid.init();  					
+								cTGrid.parse({data:res.list},"js");
+														
+								var aRows = 0;
+								var dRows = 0;
+								var rTime = 0;
+								if(res.dRows){
+									dRows = res.dRows;
+								}
+								if(res.result){
+									aRows = res.result;
+								}
+								if(res.time){
+									rTime = res.time;
+								}
+								var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows + "  Queries : "+ "0.00" + rTime + "s";
+								printLog(msg);
+								
+							}					
+						}			
+						au.send(queryCB); 
+					}			
+					else{				
+						var au = new AjaxUtil("${root}/sql/update/"+sql,null,"post");
+						function updateCB(res){
+							if(res.errorMsg){
+								alert(res.errorMsg);						
+							}else{
+								if(res.result != 0 ){						
+									var aRows = 0;
+									var dRows = 0;
+									if(res.dRows){
+										dRows = res.dRows;
+									}
+									if(res.result){
+										aRows = res.result;
+									}
+									var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows + "  Queries : "+ "0.00" + rTime + "s";
+									printLog(msg);
+									cLay.detachObject();
+								}else{
+									alert("실패");	
+								}					
+							}
+						}				
+						au.send(updateCB);
+					}
+				}
+				
+				
+				else{	
+					
+					$.ajax({ 
+						url : "${root}/sql/multi",				  
+						dataType : "json", 				   
+						data     : sql,
+						type	: "POST",					
+					    beforeSend:function(xhr){
+					    	xhr.setRequestHeader("Accept","application/json");
+					    	xhr.setRequestHeader("Content-Type","application/json; charset=UTF-8");
+					    },					
+					   	success : function(res){
+					   		
+					   		if(res.errorMsg){
+								alert(res.errorMsg);	
+								return;
+							}
+					   		
+					   		cTabs = cLay.attachTabbar();	
+					   		var aRows = 0;
+							var dRows = 0;
+							
+					   		for(var key in res){
+					   			if(key!="dRows" && key!="result"){
+					   				cTabs.addTab(key, ((res[key])[0])["tName"], null, null, true, false);
+					   				var cTGrid = cTabs.tabs(key).attachGrid();
+						   			var headerStr = "";
+									var colTypeStr = "";
+									var headerStyle = [];
+									
+									for(var listCol in (res[key])[0]){
+										if(listCol=="tName") continue;
+										headerStr += listCol + ",";
+										colTypeStr += "ro,";
+										headerStyle.push("color : red;");
+									}
+									headerStr = headerStr.substr(0, headerStr.length-1);
+									colTypeStr = colTypeStr.substr(0, colTypeStr.length-1);				
+									cTGrid.setColumnIds(headerStr);
+									cTGrid.setHeader(headerStr,null,headerStyle);
+									cTGrid.setColTypes(colTypeStr);
+									cTGrid.init();  					
+									cTGrid.parse({data:res[key]},"js"); 
+								}
+					   			else{
+					   				
+					   				if(res.dRows){
+										dRows = res.dRows;
+									}
+									if(res.result){
+										aRows = res.result;
+									}		
+					   			}
+					   		}
+					   		var msg = "<br>"+"Affected rows : " + aRows + "  Discoverd rows : " + dRows + "  Queries : "+ "0.00" + rTime + "s";
+					   		printLog(msg);
+					   		
+					   	},
+					    error : function(xhr, status, e) {
+						    	alert("에러 : "+e);
+						}					
+					});		
+					
+				}
+			};
+		}
+		
+	});
 	
 	var transFormObj = [
 		{type: "block", blockOffset: 10, list: [
@@ -369,23 +545,28 @@ dhtmlxEvent(window,"load",function(){
 	
 	
 	cLay = bodyLayout.cells("c");
+	cLay.setText(" ");
 	winF = new dhtmlXWindows();
-	popW = winF.createWindow("win1",20,30,320,300);
+	popW = winF.createWindow("win1",20,30,350,500);
 	//popW.hide(); 
 	popW.setText("Add Connection Info"); 
 	var formObj = [
 		        {type:"settings", offsetTop:12,name:"connectionInfo",labelAlign:"left"},
-				{type:"input",name:"ciName", label:"커넥션이름",required:true},
-				{type:"input",name:"ciUrl", label:"접속URL",required:true},
-				{type:"input",name:"ciPort", label:"PORT번호",validate:"ValidInteger",required:true},
-				{type:"input",name:"ciDatabase", label:"데이터베이스",required:true},
-				{type:"input",name:"ciUser", label:"유저ID",required:true},
-				{type:"password",name:"ciPwd", label:"비밀번호",required:true},
-				{type:"input",name:"ciEtc", label:"설명"},
-				{type: "block", blockOffset: 0, list: [
-					{type: "button", name:"saveBtn",value: "저장"},
-					{type: "newcolumn"},
-					{type: "button", name:"cancelBtn",value: "취소"}
+		        {type:"label",name:"label", label:"", list:[
+					{type:"input",name:"ciName", label:"커넥션이름",required:true},
+					{type:"input",name:"ciUrl", label:"접속URL",required:true},
+					{type:"input",name:"ciPort", label:"PORT번호",validate:"ValidInteger",required:true},
+					{type:"input",name:"ciDatabase", label:"데이터베이스",required:true},
+					{type:"input",name:"ciUser", label:"유저ID",required:true},
+					{type:"password",name:"ciPwd", label:"비밀번호",required:true},
+					{type:"input",name:"ciEtc", label:"설명"}
+				]},
+				{type:"label",name:"label", label:"", list:[
+					{type: "block", blockOffset: 0, list: [
+						{type: "button", name:"saveBtn",value: "저장"},
+						{type: "newcolumn"},
+						{type: "button", name:"cancelBtn",value: "취소"}
+					]}
 				]}
 		];
 	var form = popW.attachForm(formObj,true);
@@ -394,7 +575,7 @@ dhtmlxEvent(window,"load",function(){
 	form.attachEvent("onButtonClick",function(id){
 		if(id=="saveBtn"){
 			if(form.validate()){
-				form.send("${root}/connection/insert", "post",addConnectionCB);
+				form.send("${root}/connection/insert", "post", addConnectionCB);
 			}
 		}else if(id=="cancelBtn"){
 			form.clear();
@@ -428,20 +609,21 @@ dhtmlxEvent(window,"load",function(){
 		}, 300, "some unique string");
 	});
 	
+
 	
 })
 
-
-
-
-
-
-
-
+function printLog(msg){
+		
+	if($("div.text").scrollTop() > 200){
+		 $("em:first").detach();
+	}
+	$("div.text").append("<em><b><br>" + msg + "</b></em>");
+	$("div.text").scrollTop($("div.text")[0].scrollHeight);
+}
 
 
 	
-
 
 
 /* $(window).unload(function() {
@@ -451,6 +633,10 @@ dhtmlxEvent(window,"load",function(){
 
 </script>
 <body>
+	<div id="headDiv">
+		<div class="test"><br><h6></h6><br></div>
+	</div>
+	
 	<div id="footDiv" class="my_ftr">
 		<div class="text">log</div>
 	</div>

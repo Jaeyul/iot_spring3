@@ -8,7 +8,7 @@
 		ciNo, ciName, ciUrl, ciPort, ciDatabase, ciUser
 		,ciPwd, ciEtc, ciNo as id, ciName as text, uiId
 		from connection_info
-		where uiId = #{uiId}
+		where uiID = #{uiID}
 	</select>
 	<select id="selectConnectionInfoWithCiNo" parameterType="int" resultType="ci">
 		select
@@ -19,9 +19,9 @@
 	</select>
 	<insert id="insertConnectionInfo" parameterType="ci">
 		insert into connection_info(ciName, ciUrl, ciPort, ciDatabase, ciUser
-		,ciPwd, ciEtc, uiId)
+		,ciPwd, ciEtc, uiID)
 		values(#{ciName},#{ciUrl},#{ciPort},#{ciDatabase},#{ciUser},
-		#{ciPwd},#{ciEtc}, #{uiId})
+		#{ciPwd},#{ciEtc}, #{uiID})
 	</insert>
 	
 	<select id="selectDatabase" resultType="map">

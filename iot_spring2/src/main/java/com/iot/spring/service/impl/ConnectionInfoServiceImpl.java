@@ -17,6 +17,7 @@ import com.iot.spring.service.ConnectionInfoService;
 import com.iot.spring.vo.ColumnVO;
 import com.iot.spring.vo.ConnectionInfoVO;
 import com.iot.spring.vo.TableVO;
+import com.iot.spring.vo.UserInfoVO;
 
 @Service
 public class ConnectionInfoServiceImpl implements ConnectionInfoService{
@@ -49,7 +50,12 @@ public class ConnectionInfoServiceImpl implements ConnectionInfoService{
 	}
 
 	@Override
-	public void insertConnectionInfo(Map<String, Object> rMap, ConnectionInfoVO ci) {
+	public void insertConnectionInfo(Map<String, Object> rMap, ConnectionInfoVO ci, HttpSession hs) {
+		
+		if(hs.getAttribute("user") != null) {			
+			UserInfoVO ui = (UserInfoVO) hs.getAttribute("user"); 
+			ci.setUiID(ui.getUiID());
+		}		
 		int result = cidao.insertConnectionInfo(ci);
 		rMap.put("msg", "저장이 실패하였습니다.");
 		if(result==1) {

@@ -39,6 +39,7 @@ public class SqlServiceImpl implements SqlService {
 		Map<String, Object> map = new HashMap<String,Object>();
 		SqlSession ss =  (SqlSession) hs.getAttribute("sqlSession");
 		String[] sqlArr = sql.split(";");
+		
 		int qIndex = 0;
 		int uIndex = 0;		
 		

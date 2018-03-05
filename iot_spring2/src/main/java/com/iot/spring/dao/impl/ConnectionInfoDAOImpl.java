@@ -28,6 +28,7 @@ public class ConnectionInfoDAOImpl implements ConnectionInfoDAO {
 		ss.close();
 		return ciList;
 	}
+	
 	@Override
 	public ConnectionInfoVO selectConnectionInfo(int ciNo) {
 		SqlSession ss = ssf.openSession();
@@ -58,6 +59,7 @@ public class ConnectionInfoDAOImpl implements ConnectionInfoDAO {
 	public List<Map<String, Object>> selectDatabaseList(SqlSession ss) throws Exception {
 		return ss.selectList("connection_info.selectDatabase");
 	}
+	
 	@Override
 	public List<TableVO> selectTableList(SqlSession ss,String dbName) {
 		List<TableVO> result = null;

@@ -1,23 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>로그인</title>
 </head>
-
 <script>
 	var winF,popW;
 	$(document).ready(function(){
 		winF = new dhtmlXWindows();
+		
 		winF.attachViewportTo("winVP");
-		popW = winF.createWindow("win1",20,30,350,320);
+		popW = winF.createWindow("win1",20,30,350,320);		
 		popW.button("close").hide();
 		popW.button("minmax").hide();
 		popW.button("park").hide();
 		popW.setText("Login"); 
-
+	
 		winF.window("win1").centerOnScreen();
 		winF.window("win1").denyMove();
 		winF.window("win1").denyResize();
@@ -38,7 +39,6 @@
 					]}
 			];
 		var form = popW.attachForm(formObj,true);
-		
 		form.attachEvent("onButtonClick",function(id){
 			if(id=="loginBtn"){
 				if(form.validate()){
@@ -65,6 +65,10 @@
 	}
 </script>
 <body>
-	<div id="winVP"></div>
+	<div><br><h6></h6><br></div>
+	<div id="winVP">
+	<p> </p>
+	<p style="text-align: center;"><img src="${rPath}/imgs/favicon2.png" width="130" height="130" background-color:"#58ACFA"></img></p>	
+	</div>
 </body>
 </html>

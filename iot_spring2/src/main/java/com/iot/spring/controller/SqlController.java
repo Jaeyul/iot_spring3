@@ -31,6 +31,7 @@ public class SqlController {
 			@PathVariable("sql")String sql,
 			HttpSession hs){
 		
+		double startTime = System.currentTimeMillis();
 		log.info("sql=>{}",sql);				
 		List<Map<String,Object>> dataList = sqls.getQueryData(sql, hs);
 		int discoveredRows = dataList.size();
@@ -38,6 +39,8 @@ public class SqlController {
 		Map<String, Object> hm = new HashMap<String,Object>();
 		hm.put("list", dataList);
 		hm.put("dRows", discoveredRows);
+		log.info("time=>{}", startTime);
+		hm.put("time", (System.currentTimeMillis()-startTime));
 		return hm;
 	}
 	
@@ -45,11 +48,12 @@ public class SqlController {
 	public @ResponseBody Map<String, Object> sqlUpdate(
 			@PathVariable("sql")String sql,
 			HttpSession hs){
-		
+		double startTime = System.currentTimeMillis();
 		log.info("sql=>{}",sql);		
 		int result = sqls.getUpdateResult(sql, hs);
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("result", result);		
+		map.put("result", result);
+		map.put("time", (System.currentTimeMillis()-startTime));
 		return map;
 	}
 	
@@ -57,7 +61,7 @@ public class SqlController {
 	public @ResponseBody Map<String, Object> multiSql(
 			@RequestBody String sql,
 			HttpSession hs){
-		
+		double startTime = System.currentTimeMillis();
 		log.info("sql=>{}",sql);
 		
 		Map<String,Object> map = sqls.getMultiResult(sql, hs);
@@ -75,6 +79,7 @@ public class SqlController {
 		map.put("dRows", discoveredRows);
 		map.put("result", result);
 		
+		map.put("time", (System.currentTimeMillis()-startTime));
 		return map;
 	}
 	

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import com.iot.spring.dao.NaverTransDAO;
 import com.iot.spring.vo.NaverMsg;
 
-
 @Service
 @Aspect
 public class LogPrintAspect {
@@ -47,20 +46,7 @@ public class LogPrintAspect {
 			
 			obj = pjp.proceed();				
 			
-		} 
-//		catch(Exception e){
-//			logger.error("error=>{}", e);	
-//			Map<String,Object> map = new HashMap<String,Object>();
-//			String msg = e.getMessage();
-//			msg = ntDAO.getText(msg);	
-//			logger.error("error=>{}", msg);	
-//			//NaverMsg nm = om.readValue(msg, NaverMsg.class);
-//			map.put("errorMsg", msg);
-//			
-//			logger.error("errorasdasdasdasd =>{}",map);
-//			return map;
-//		} 
-		catch (Throwable e) {
+		}catch (Throwable e) {
 			logger.error("error=>{}", e);	
 			Map<String,Object> map = new HashMap<String,Object>();
 			String msg = ntDAO.getText(e.getMessage());				

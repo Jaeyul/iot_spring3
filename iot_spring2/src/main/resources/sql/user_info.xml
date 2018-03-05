@@ -7,7 +7,7 @@
 		select
 		uino,uiname,uiid,uipwd,uiEmail, admin 
 		from user_info
-		where 1=1
+		where 1=1 
 		<if test="uiID!=null">
 			and uiID = #{uiID}
 		</if>
@@ -15,6 +15,9 @@
 			and uiPwd = #{uiPwd}
 		</if>
 	</select>
+	
+	
+	
 	<insert id="insertUserInfo" parameterType="ui">
 		insert into user_info(uiName, uiID, uiPwd, uiEmail, admin)
 		values(#{uiName}, #{uiID}, #{uiPwd}, #{uiEmail}, #{admin})

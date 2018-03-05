@@ -29,34 +29,44 @@ public class UserInfoController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> login( UserInfoVO ui, HttpSession hs){
 		Map<String, Object> map = new HashMap<String, Object>();
-		if(uis.login(map, ui)) {
-			hs.setAttribute("user", map.get("user"));
+		if(uis.login(map, ui, hs)) {
+			log.info("map=>{}",map);
 		}
 		return map;
 	}
+	
+	@RequestMapping(value="/logout", method=RequestMethod.GET)
+	public String logout(HttpSession hs){
+
+		hs.removeAttribute("user");	
+		hs.removeAttribute("isLogin");	
+		return "index";
+	}
+	
 	@RequestMapping(value="/join", method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> join(@RequestBody UserInfoVO ui){
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("msg", "회원가입 실패 임마~");
+		map.put("msg", "회원가입에 실패하셨습니다.");
 		map.put("biz", false);
+		log.info("UserInfoVO=>{}",ui);
 		int result = uis.join(ui);
 		if(result==1) {
-			map.put("msg", "회원가입 성공 임마~");
+			map.put("msg", "회원가입에 성공하셨습니다.");
 			map.put("biz", true);
 		}else if(result==2) {
-			map.put("msg", "아이디 중복 임마~");
+			map.put("msg", "중복된 아이디입니다.");
 		}
 		return map;
 	}
 
-	@RequestMapping(value="/check/{uiId}", method=RequestMethod.GET)
-	public @ResponseBody Map<String, Object> join2(@PathVariable String uiId){
+	@RequestMapping(value="/check/{uiID}", method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> checkID(@PathVariable("uiID")String uiID){
 		Map<String, Object> map = new HashMap<String, Object>();
-		log.info("insertUI=>{}",uiId);
-		map.put("msg", "아이디 중복 임마~");
+		log.info("uiID=>{}",uiID);
+		map.put("msg", "아이디 중복 입니다.");
 		map.put("biz", false);
-		if(uis.checkUserId(uiId)==0) {
-			map.put("msg", "없는 아이디");
+		if(uis.checkUserId(uiID)==0) {
+			map.put("msg", "사용가능한 아이디 입니다.");
 			map.put("biz", true);
 		}
 		return map;
